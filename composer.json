@@ -1,0 +1,21 @@
+{
+    "name": "flamix/marketing-php-sdk",
+    "description": "Flamix Marketing SDK",
+    "homepage": "https://flamix.info",
+    "authors": [
+        {
+            "name": "Roman Shkabko",
+            "email": "r.shkabko@flamix.email",
+            "homepage": "http://flamix.software"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "guzzlehttp/guzzle": ">=6"
+    },
+    "autoload":{
+        "psr-4":{
+            "Flamix\\Marketing\\":"src"
+        }
+    }
+}
