@@ -3,77 +3,91 @@
 namespace Flamix\Marketing;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Exception;
 
 trait RequestsTrait
 {
     protected string $token;
-    protected string $uri = 'http://localhost/api/v1/';
+    protected string $uri = 'https://pr.flamix.info/api/v1/';
 
-    protected function request(string $method, string $uri, array $payload = [])
+    protected function request(string $method, string $uri, array $payload = []): array
     {
-        $response = new Client([
+        $response = (new Client([
             'base_uri' => $this->uri,
+            'http_errors' => false,
             'headers' => [
-                'Api-Token' => $apiToken,
-                'User-Agent' => 'finolog/sdk-php'
+                'Authorization' => "Bearer {$this->token}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'User-Agent' => 'flamix/api-sdk',
             ]
-        ])->request($method, $uri, 'form_params' => $payload);
+        ]))->request($method, $uri, [
+            'form_params' => $payload,
+            'connect_timeout' => 10,
+            'timeout' => 10,
+        ]);
 
         if (!$this->success($response))
             return $this->handleRequestError($response);
 
-        $responseBody = (string) $response->getBody();
-
-        return json_decode($responseBody, true) ?: $responseBody;
+        return $this->json($response);
     }
 
-    protected function get(string $uri)
+    protected function get(string $uri): array
     {
         return $this->request('GET', $uri);
     }
 
-    protected function post(string $uri, array $payload = [])
+    protected function post(string $uri, array $payload = []): array
     {
         return $this->request('POST', $uri, $payload);
     }
 
-    protected function put(string $uri, array $payload = [])
+    protected function put(string $uri, array $payload = []): array
     {
         return $this->request('PUT', $uri, $payload);
     }
 
-    protected function delete(string $uri, array $payload = [])
+    protected function delete(string $uri, array $payload = []): array
     {
         return $this->request('DELETE', $uri, $payload);
     }
 
-    public function success($response): bool
+    private function json(Response $response): array
+    {
+        $result = json_decode((string)$response->getBody(), true);
+        if (!json_last_error() && is_array($result))
+            return $result;
+
+        return ['success' => false, 'data' => (string)$response->getBody()];
+    }
+
+    protected function success(Response $response): bool
     {
         if (!$response)
             return false;
 
-        return (int) substr($response->getStatusCode(), 0, 1) === 2;
+        return ($response->getStatusCode() >= 200 && $response->getStatusCode() <= 210);
     }
 
-    protected function handleRequestError(ResponseInterface $response): void
+    protected function handleRequestError(Response $response): void
     {
-        if ($response->getStatusCode() === 422) {
-            throw new ValidationException(json_decode((string) $response->getBody(), true));
-        }
+        switch ($response->getStatusCode()) {
+            case 400:
+                throw new FailedActionException($this->json($response));
 
-        if ($response->getStatusCode() === 404) {
-            throw new NotFoundException();
-        }
+            case 401:
+                throw new UnauthorizedException($this->json($response));
 
-        if ($response->getStatusCode() === 400) {
-            throw new FailedActionException((string) $response->getBody());
-        }
+            case 404:
+                throw new NotFoundException();
 
-        if ($response->getStatusCode() === 401) {
-            throw new UnauthorizedException((string) $response->getBody());
-        }
+            case 422:
+                throw new ValidationException($this->json($response));
 
-        throw new Exception((string) $response->getBody());
+            default:
+                throw new Exception($this->json($response));
+        }
     }
 }

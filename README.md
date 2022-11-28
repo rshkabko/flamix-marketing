@@ -1,7 +1,7 @@
 ## Install
 
 ```php
-composer require flamix/b24-lead
+composer require flamix/marketing-php-sdk
 ```
 
-## Init
+## Email

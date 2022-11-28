@@ -1,33 +1,26 @@
 <?php
 
-namespace Flamix\Marketing;
+namespace Flamix\Marketing\Actions;
 
 use Flamix\Marketing\RequestsTrait;
-use Flamix\Marketing\Actions\Email;
-use Flamix\Marketing\Actions\Banner;
 
-class Client
+class Banner
 {
     use RequestsTrait;
 
     public string $lang = 'en';
-    public Email $email;
-    public Banner $banner;
 
     public function __construct(string $token, string $lang = 'en')
     {
         $this->token = $token;
         $this->lang = $lang;
 
-        $this->email = new Email($token, $lang);
-        $this->banner = new Banner($token, $lang);
-
         return $this;
     }
 
-    public function email(?string $type = null): Email
+    public function send(string $email, array $data = []): bool
     {
-        return new Email($this->token, $this->lang, $type);
+        dd('Sending email...');
     }
 
     public function banner(int $width = 240, int $height = 800): Banner
