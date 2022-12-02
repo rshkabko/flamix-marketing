@@ -4,6 +4,9 @@ namespace Flamix\Marketing;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use Flamix\Marketing\Exceptions\FailedActionException;
+use Flamix\Marketing\Exceptions\UnauthorizedException;
+use Flamix\Marketing\Exceptions\ValidationException;
 use Exception;
 
 trait RequestsTrait
@@ -11,6 +14,15 @@ trait RequestsTrait
     protected string $token;
     protected string $uri = 'https://pr.flamix.info/api/v1/';
 
+    /**
+     * Make request to API endpoints.
+     *
+     * @param string $method POST, GET, etc
+     * @param string $uri mail/send. Do not start with "/"
+     * @param array $payload Additional datas
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     protected function request(string $method, string $uri, array $payload = []): array
     {
         $response = (new Client([
@@ -54,6 +66,12 @@ trait RequestsTrait
         return $this->request('DELETE', $uri, $payload);
     }
 
+    /**
+     * Responce to array convertation.
+     *
+     * @param Response $response
+     * @return array
+     */
     private function json(Response $response): array
     {
         $result = json_decode((string)$response->getBody(), true);
@@ -63,6 +81,13 @@ trait RequestsTrait
         return ['success' => false, 'data' => (string)$response->getBody()];
     }
 
+    /**
+     * Is our responce good?
+     * Responce must return header status of 200.
+     *
+     * @param Response $response
+     * @return bool
+     */
     protected function success(Response $response): bool
     {
         if (!$response)
@@ -71,6 +96,14 @@ trait RequestsTrait
         return ($response->getStatusCode() >= 200 && $response->getStatusCode() <= 210);
     }
 
+    /**
+     * Handle errors.
+     * We throw new exeptions with human explanations.
+     *
+     * @param Response $response
+     * @return void
+     * @throws Exception
+     */
     protected function handleRequestError(Response $response): void
     {
         switch ($response->getStatusCode()) {
@@ -78,7 +111,7 @@ trait RequestsTrait
                 throw new FailedActionException($this->json($response));
 
             case 401:
-                throw new UnauthorizedException($this->json($response));
+                throw new UnauthorizedException();
 
             case 404:
                 throw new NotFoundException();
@@ -87,7 +120,7 @@ trait RequestsTrait
                 throw new ValidationException($this->json($response));
 
             default:
-                throw new Exception($this->json($response));
+                throw new Exception(print_r($this->json($response), true));
         }
     }
 }
