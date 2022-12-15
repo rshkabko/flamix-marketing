@@ -91,12 +91,12 @@ class Email
      * Sending email.
      * Main function to sending email. We can pass any params and configurate email type.
      *
-     * @param string|int $company
+     * @param string $company
      * @param string $email
      * @param array $data
      * @return array
      */
-    public function send(string|int $company, string $email, array $data = []): array
+    public function send(string $company, string $email, array $data = []): array
     {
         return $this->post("mail/send/{$company}/{$this->lang}/{$email}", $this->prepareData($data));
     }
@@ -126,7 +126,7 @@ class Email
      * @param array $payment ['id' => 999, 'date' => '10/12/2022', 'method' => 'Flamix.Kassa']
      * @return $this
      */
-    public function payment(string $type, float $amount, string $currency = 'USD', array $payment = [], array $user = []): self
+    public function payment(string $type, float $amount, string $currency = 'USD', array $payment = []): self
     {
         $this->template = 'payment';
         $this->data['type'] = $type;

@@ -9,6 +9,8 @@ composer require flamix/marketing-php-sdk
 We can send custom and standard mails.
 
 ```php
+use Flamix\Marketing\Client as FlamixMarketing;
+
 // Init
 $flamixMarketing = new FlamixMarketing('token', 'en');
 
