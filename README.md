@@ -31,4 +31,18 @@ $flamixMarketing->email
     ->setUser(['id' => 1, 'name' => 'Roman Shkabko', 'region' => 'UA', 'currency' => 'UAH'])
     ->setItem(['id' => 123123, 'name' => 'WooCommerce Store Sync'], 'FX-123456789')
     ->send('flamix.solutions', 'client@gmail.com');
+
+$flamixMarketing->email
+    ->order('order_confirm', 9, ['items' => 999, 'delivery' => 100], 'UAH', 'Львів, Миколайчука 36, Поштомат Нової пошти', 'http://localhost/admin/companies')
+    ->setItem([
+            [
+                'url' => 'https://4mobi.com.ua/product/picture-shadow-matte-case-new-pc-tpu-iphone-11-pro-in-outer-space-nasa-light-purple/',
+                'img' => 'https://4mobi.com.ua/upload/resize_cache/webp/iblock/f16/emm52lkm7g6duc004kjmbvbbomxp4i60/450_450_0/picture_shadow_matte_case_new_pc_tpu_iphone_11_pro_in_outer_space_nasa_light_purple.webp',
+                'name' => 'Чехол с дизайном Picture Shadow Matte Case New (PC+TPU) iPhone 11 Pro in outer space nasa/light purple',
+                'count' => 1,
+                'price' => 999,
+            ],
+            // Many goods...
+        ])
+    ->send('flamix.solutions', 'client@gmail.com');
 ```

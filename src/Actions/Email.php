@@ -138,4 +138,29 @@ class Email
 
         return $this;
     }
+
+    /**
+     * Order template.
+     *
+     * @param string $type ex, confirm_order
+     * @param $id Order Number
+     * @param array $prices Many prices ['items' => 999, 'delivery' => 100]
+     * @param string $currency UAH or USD
+     * @param string $address Full delivery address
+     * @param string $status Link to check status
+     * @return $this
+     */
+    public function order(string $type, $id, array $prices, string $currency, string $address = '', string $status = ''): self
+    {
+        $this->template = $type;
+        $this->data['order'] = [
+            'id' => $id,
+            'price' => $prices,
+            'currency' => $currency,
+            'address' => $address,
+            'status' => $status,
+        ];
+
+        return $this;
+    }
 }
