@@ -46,3 +46,10 @@ $flamixMarketing->email
         ])
     ->send('flamix.solutions', 'client@gmail.com');
 ```
+
+### SMS
+
+```php
+    $sms = new \Flamix\Marketing\Actions\SMS('token', '4mobi.com.ua');
+    $result = $sms->send('380988220142', 'hello!');
+```
