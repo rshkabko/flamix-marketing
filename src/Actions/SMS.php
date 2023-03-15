@@ -18,12 +18,12 @@ class SMS
     /**
      * Sending SMS.
      *
-     * @param string|int $phone
+     * @param string $phone
      * @param string $message
      * @param bool $isTest
      * @return array
      */
-    public function send(string|int $phone, string $message, bool $isTest = false): array
+    public function send(string $phone, string $message, bool $isTest = false): array
     {
         return $this->post("sms/send/{$this->company}", [
             'phone' => $phone,
