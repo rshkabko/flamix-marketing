@@ -21,6 +21,31 @@ class Email
     }
 
     /**
+     * Set template.
+     * If we want send custom mail.
+     *
+     * @param string $subject
+     * @return $this
+     */
+    public function setTemplate(string $template): self
+    {
+        $this->template = $template;
+        return $this;
+    }
+
+    /**
+     * Set Data.
+     *
+     * @param string $subject
+     * @return $this
+     */
+    public function setData(array $data): self
+    {
+        $this->data = array_merge($this->data, $data);
+        return $this;
+    }
+
+    /**
      * Set mail subject.
      * Will displayed in servece fields
      *
@@ -102,6 +127,22 @@ class Email
     }
 
     /**
+     * Sending custom email.
+     *
+     * @param string $template
+     * @param array $data
+     * @return $this
+     */
+    public function custom(string $template, array $data): self
+    {
+        $this->setTemplate($template);
+        $this->setData($data);
+
+        return $this;
+    }
+
+
+    /**
      * Sending license key.
      *
      * @param string $license FX-1234567890
@@ -110,7 +151,7 @@ class Email
      */
     public function license(string $license, string $name): self
     {
-        $this->template = 'license';
+        $this->setTemplate('license');
         $this->data['license'] = $license;
         $this->data['name'] = $name;
 
@@ -128,7 +169,7 @@ class Email
      */
     public function payment(string $type, float $amount, string $currency = 'USD', array $payment = []): self
     {
-        $this->template = 'payment';
+        $this->setTemplate('payment');
         $this->data['type'] = $type;
         $this->data['amount'] = $amount;
         $this->data['currency'] = strtolower($currency);
@@ -152,7 +193,7 @@ class Email
      */
     public function order(string $type, $id, array $prices, string $currency, string $address = '', string $status = ''): self
     {
-        $this->template = $type;
+        $this->setTemplate($type);
         $this->data['order'] = [
             'id' => $id,
             'price' => $prices,
