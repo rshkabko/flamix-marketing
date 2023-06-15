@@ -19,6 +19,11 @@ $flamixMarketing->email
     ->setSubject('Super Creative Subject')
     ->setBody('<p>Put HTML text here!</p>')
     ->send('flamix.solutions', 'client@gmail.com', ['title' => 'Optionally you can set title']);
+    
+// Custom email with template
+$flamixMarketing->email
+    ->custom('password_restore', ['link' => $url])
+    ->send('flamix.solutions', 'client@gmail.com', ['title' => 'Optionally you can set title']);
 
 // License mail
 $flamixMarketing->email

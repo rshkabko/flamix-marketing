@@ -140,8 +140,7 @@ class Email
 
         return $this;
     }
-
-
+    
     /**
      * Sending license key.
      *
@@ -151,9 +150,10 @@ class Email
      */
     public function license(string $license, string $name): self
     {
-        $this->setTemplate('license');
-        $this->data['license'] = $license;
-        $this->data['name'] = $name;
+        $this->custom('license', [
+            'license' => $license,
+            'name' => $name,
+        ]);
 
         return $this;
     }
@@ -169,13 +169,14 @@ class Email
      */
     public function payment(string $type, float $amount, string $currency = 'USD', array $payment = []): self
     {
-        $this->setTemplate('payment');
-        $this->data['type'] = $type;
-        $this->data['amount'] = $amount;
-        $this->data['currency'] = strtolower($currency);
+        $this->custom('payment', [
+            'type' => $type,
+            'amount' => $amount,
+            'currency' => strtolower($currency),
+        ]);
 
         if (!empty($payment))
-            $this->data['payment'] = $payment;
+            $this->setData(['payment' => $payment]);
 
         return $this;
     }
@@ -193,14 +194,15 @@ class Email
      */
     public function order(string $type, $id, array $prices, string $currency, string $address = '', string $status = ''): self
     {
-        $this->setTemplate($type);
-        $this->data['order'] = [
-            'id' => $id,
-            'price' => $prices,
-            'currency' => $currency,
-            'address' => $address,
-            'status' => $status,
-        ];
+        $this->custom($type, [
+            'order' => [
+                'id' => $id,
+                'price' => $prices,
+                'currency' => $currency,
+                'address' => $address,
+                'status' => $status,
+            ]
+        ]);
 
         return $this;
     }
