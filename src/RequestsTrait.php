@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\Response;
 use Flamix\Marketing\Exceptions\FailedActionException;
 use Flamix\Marketing\Exceptions\UnauthorizedException;
 use Flamix\Marketing\Exceptions\ValidationException;
+use Flamix\Marketing\Exceptions\NotFoundException;
 use Exception;
 
 trait RequestsTrait
@@ -75,8 +76,9 @@ trait RequestsTrait
     private function json(Response $response): array
     {
         $result = json_decode((string)$response->getBody(), true);
-        if (!json_last_error() && is_array($result))
+        if (!json_last_error() && is_array($result)) {
             return $result;
+        }
 
         return ['success' => false, 'data' => (string)$response->getBody()];
     }
@@ -90,8 +92,7 @@ trait RequestsTrait
      */
     protected function success(Response $response): bool
     {
-        if (!$response)
-            return false;
+        if (!$response) return false;
 
         return ($response->getStatusCode() >= 200 && $response->getStatusCode() <= 210);
     }
