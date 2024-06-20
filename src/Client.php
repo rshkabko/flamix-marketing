@@ -5,6 +5,7 @@ namespace Flamix\Marketing;
 use Flamix\Marketing\RequestsTrait;
 use Flamix\Marketing\Actions\Email;
 use Flamix\Marketing\Actions\Banner;
+use Flamix\Marketing\Actions\Link;
 
 class Client
 {
@@ -33,5 +34,10 @@ class Client
     public function banner(int $width = 240, int $height = 800): Banner
     {
         return new Banner($this->token, $this->lang, $width, $height);
+    }
+
+    public function link(): Link
+    {
+        return new Link($this->token, $this->lang);
     }
 }
