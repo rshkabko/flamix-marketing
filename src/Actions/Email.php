@@ -140,7 +140,7 @@ class Email
 
         return $this;
     }
-    
+
     /**
      * Sending license key.
      *
@@ -202,6 +202,17 @@ class Email
                 'address' => $address,
                 'status' => $status,
             ]
+        ]);
+
+        return $this;
+    }
+
+    public function choose(string $title, string $body, array $options): self
+    {
+        $this->custom('choose', [
+            'title' => $title,
+            'body' => $body,
+            'options' => $options,
         ]);
 
         return $this;
