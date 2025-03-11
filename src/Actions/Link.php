@@ -2,6 +2,7 @@
 
 namespace Flamix\Marketing\Actions;
 
+use Exception;
 use Flamix\Marketing\RequestsTrait;
 
 class Link
@@ -29,5 +30,18 @@ class Link
         }
 
         return $result['link'];
+    }
+
+    public function lnk(string $url, array $data = []): string
+    {
+        $this->uri = 'https://lnk.ua/api/v1/';
+        $result = $this->post("link/create", array_merge($data, ['link' => $url]));
+
+        // TODO: Check the error message
+//        if (($result['result'] ?? 'error') !== 'success') {
+//            throw new Exception($result['message'] ?? $result);
+//        }
+
+        return $result['result']['lnk'];
     }
 }
