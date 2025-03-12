@@ -32,16 +32,27 @@ class Link
         return $result['link'];
     }
 
-    public function lnk(string $url, array $data = []): string
+    public function lnk(string $url, array $data = []): ?string
     {
         $this->uri = 'https://lnk.ua/api/v1/';
         $result = $this->post("link/create", array_merge($data, ['link' => $url]));
 
-        // TODO: Check the error message
-//        if (($result['result'] ?? 'error') !== 'success') {
-//            throw new Exception($result['message'] ?? $result);
-//        }
+        if ($result['result']['errors'] ?? null) {
+            throw new Exception($result['result']['message'] ?? $result);
+        }
 
-        return $result['result']['lnk'];
+        return $result['result']['lnk'] ?? null;
+    }
+
+    public function qr(string $url, array $data = []): ?string
+    {
+        $this->uri = 'https://lnk.ua/api/v1/';
+        $result = $this->post("link/create", array_merge($data, ['link' => $url]));
+
+        if ($result['result']['errors'] ?? null) {
+            throw new Exception($result['result']['message'] ?? $result);
+        }
+
+        return $result['result']['qr'] ?? null;
     }
 }
