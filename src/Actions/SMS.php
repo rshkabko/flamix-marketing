@@ -4,6 +4,7 @@ namespace Flamix\Marketing\Actions;
 
 use Flamix\Marketing\RequestsTrait;
 
+/** SMS sending; built directly, not through Client, and takes a company instead of a language. */
 class SMS
 {
     use RequestsTrait;
@@ -15,14 +16,6 @@ class SMS
         $this->company = $company;
     }
 
-    /**
-     * Sending SMS.
-     *
-     * @param string $phone
-     * @param string $message
-     * @param bool $isTest
-     * @return array
-     */
     public function send(string $phone, string $message, bool $isTest = false): array
     {
         return $this->post("sms/send/{$this->company}", [

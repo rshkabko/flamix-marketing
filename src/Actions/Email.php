@@ -4,6 +4,7 @@ namespace Flamix\Marketing\Actions;
 
 use Flamix\Marketing\RequestsTrait;
 
+/** Mail through pr.flamix.info: pick a template with a builder method, then send(). */
 class Email
 {
     use RequestsTrait;
@@ -20,75 +21,40 @@ class Email
         return $this;
     }
 
-    /**
-     * Set template.
-     * If we want send custom mail.
-     *
-     * @param string $subject
-     * @return $this
-     */
+    /** Template the API renders; "general" by default. */
     public function setTemplate(string $template): self
     {
         $this->template = $template;
         return $this;
     }
 
-    /**
-     * Set Data.
-     *
-     * @param string $subject
-     * @return $this
-     */
+    /** Merged into the data set before; send() merges it again with its own $data. */
     public function setData(array $data): self
     {
         $this->data = array_merge($this->data, $data);
         return $this;
     }
 
-    /**
-     * Set mail subject.
-     * Will displayed in servece fields
-     *
-     * @param string $subject
-     * @return $this
-     */
     public function setSubject(string $subject): self
     {
         $this->data['subject'] = $subject;
         return $this;
     }
 
-    /**
-     * Set body with HTML tags.
-     *
-     * @param string $body
-     * @return $this
-     */
     public function setBody(string $body): self
     {
         $this->data['body'] = $body;
         return $this;
     }
 
-    /**
-     * Set User info.
-     *
-     * @param array $user ['id' => 1, 'name' => 'Roman Shkabko', 'region' => 'UA', 'currency' => 'UAH']
-     * @return $this
-     */
+    /** @param array{id?: int, name?: string, region?: string, currency?: string} $user */
     public function setUser(array $user): self
     {
         $this->data['user'] = $user;
         return $this;
     }
 
-    /**
-     * Set item info.
-     *
-     * @param array $item ['id' => 123123, 'name' => 'WooCommerce Store Sync']
-     * @param string|null $license FX-1234567890
-     * @return $this
-     */
+    /** @param array $item ['id' => 123123, 'name' => '…'], or a list of order lines for order() */
     public function setItem(array $item, ?string $license = null): self
     {
         $this->data['item'] = $item;
@@ -99,40 +65,19 @@ class Email
         return $this;
     }
 
-    /**
-     * Prepare main data (like template) and input data.
-     *
-     * @param array $data
-     * @return array
-     */
     private function prepareData(array $data = []): array
     {
+        // array_merge_recursive: a key set both here and in send() is sent as an array of both values.
         return array_merge_recursive([
             'template' => $this->template,
         ], $data, $this->data);
     }
 
-    /**
-     * Sending email.
-     * Main function to sending email. We can pass any params and configurate email type.
-     *
-     * @param string $company
-     * @param string $email
-     * @param array $data
-     * @return array
-     */
     public function send(string $company, string $email, array $data = []): array
     {
         return $this->post("mail/send/{$company}/{$this->lang}/{$email}", $this->prepareData($data));
     }
 
-    /**
-     * Sending custom email.
-     *
-     * @param string $template
-     * @param array $data
-     * @return $this
-     */
     public function custom(string $template, array $data): self
     {
         $this->setTemplate($template);
@@ -141,13 +86,6 @@ class Email
         return $this;
     }
 
-    /**
-     * Sending license key.
-     *
-     * @param string $license FX-1234567890
-     * @param string $name WooCommerce Store Sync
-     * @return $this
-     */
     public function license(string $license, string $name): self
     {
         $this->custom('license', [
@@ -159,13 +97,8 @@ class Email
     }
 
     /**
-     * Mail when user make payment or we charging from account.
-     *
      * @param string $type debit or credit
-     * @param float $amount 100
-     * @param string $currency USD
      * @param array $payment ['id' => 999, 'date' => '10/12/2022', 'method' => 'Flamix.Kassa']
-     * @return $this
      */
     public function payment(string $type, float $amount, string $currency = 'USD', array $payment = []): self
     {
@@ -182,15 +115,9 @@ class Email
     }
 
     /**
-     * Order template.
-     *
-     * @param string $type ex, confirm_order
-     * @param $id Order Number
-     * @param array $prices Many prices ['items' => 999, 'delivery' => 100]
-     * @param string $currency UAH or USD
-     * @param string $address Full delivery address
-     * @param string $status Link to check status
-     * @return $this
+     * @param string $type the template, e.g. order_confirm
+     * @param array $prices ['items' => 999, 'delivery' => 100]
+     * @param string $status link to the order status page
      */
     public function order(string $type, $id, array $prices, string $currency, string $address = '', string $status = ''): self
     {
@@ -207,6 +134,7 @@ class Email
         return $this;
     }
 
+    /** @param array<string, string> $options url => button label */
     public function choose(string $title, string $body, array $options): self
     {
         $this->custom('choose', [

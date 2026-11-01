@@ -7,9 +7,13 @@ use Flamix\Marketing\Actions\Email;
 use Flamix\Marketing\Actions\Banner;
 use Flamix\Marketing\Actions\Link;
 
+/** Entry point of the Flamix Marketing SDK: builds the Email, Banner and Link actions for one API token. */
 class Client
 {
     use RequestsTrait;
+
+    /** @var callable|null Process-wide Guzzle handler for every SDK request; tests must reset it to null. */
+    public static $handler = null;
 
     public string $lang = 'en';
     public Email $email;
@@ -26,14 +30,15 @@ class Client
         return $this;
     }
 
+    /** A fresh Email per mail, unlike the shared $email property, which keeps data between sends. */
     public function email(?string $type = null): Email
     {
-        return new Email($this->token, $this->lang, $type);
+        return new Email($this->token, $this->lang);
     }
 
     public function banner(int $width = 240, int $height = 800): Banner
     {
-        return new Banner($this->token, $this->lang, $width, $height);
+        return new Banner($this->token, $this->lang);
     }
 
     public function link(): Link

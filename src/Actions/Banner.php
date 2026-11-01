@@ -4,6 +4,7 @@ namespace Flamix\Marketing\Actions;
 
 use Flamix\Marketing\RequestsTrait;
 
+/** Unfinished banner action: send() calls dd(), so do not use it. */
 class Banner
 {
     use RequestsTrait;
@@ -25,6 +26,6 @@ class Banner
 
     public function banner(int $width = 240, int $height = 800): Banner
     {
-        return new Banner($this->token, $this->lang, $width, $height);
+        return new Banner($this->token, $this->lang);
     }
 }

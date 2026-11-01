@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '7.4'
+            phpunit: '^9.6'
+            stability: '--prefer-lowest'
+          - php: '8.3'
+            phpunit: ''
+            stability: ''
+
+    name: PHP ${{ matrix.php }} ${{ matrix.stability }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, dom
+          tools: composer:v2
+
+      # Plain PHP SDK without flamix/* dependencies: no Laravel app, no Satis, no PACKAGES_TOKEN.
+      - name: Install dependencies
+        run: |
+          if [ -n "${{ matrix.phpunit }}" ]; then composer require --dev --no-update "phpunit/phpunit:${{ matrix.phpunit }}"; fi
+          # Lowest Guzzle 6 carries security advisories, and Composer refuses to install it otherwise.
+          if [ -n "${{ matrix.stability }}" ]; then composer config policy.advisories.block false; fi
+          composer update --no-interaction --prefer-dist ${{ matrix.stability }}
+
+      - name: Run tests
+        run: ./vendor/bin/phpunit --testdox

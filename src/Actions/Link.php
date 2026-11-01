@@ -5,6 +5,7 @@ namespace Flamix\Marketing\Actions;
 use Exception;
 use Flamix\Marketing\RequestsTrait;
 
+/** Short links and QR codes through g.flamix.info and lnk.ua. */
 class Link
 {
     use RequestsTrait;
@@ -21,7 +22,6 @@ class Link
 
     public function get(string $url, array $data = []): string
     {
-        // Special URL for the API
         $this->uri = 'https://g.flamix.info/api/v1/';
         $result = $this->post("link", array_merge($data, ['url' => $url]));
 
